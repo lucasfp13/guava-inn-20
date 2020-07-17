@@ -1,7 +1,10 @@
 class Reservation < ApplicationRecord
   belongs_to :room
 
-  validates :start_date, :end_date, :guest_name, :number_of_guests, presence: true
+  validates :start_date, presence: true
+  validates :end_date, presence: true
+  validates :guest_name, presence: true
+  validates :number_of_guests, presence: true
   validates :number_of_guests, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
   validate :start_date_is_before_end_date
 
