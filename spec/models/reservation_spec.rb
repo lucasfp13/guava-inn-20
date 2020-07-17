@@ -65,7 +65,7 @@ RSpec.describe Reservation, type: :model do
   end
 
   it 'validates that start_date is not equal to end_date' do
-    reservation = Reservation.new(start_date: '2020-08-01', end_date: '2020-08-02')
+    reservation = Reservation.new(start_date: '2020-08-01', end_date: '2020-08-01')
 
     expect(reservation).to_not be_valid
     expect(reservation).to have_error_on(:base, :invalid_dates)
