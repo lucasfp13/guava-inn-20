@@ -1,8 +1,7 @@
 class ReservationsController < ApplicationController
+  before_action :set_should_show_results, only: %i[search]
+
   def search
-    @should_show_results = params[:start_date].present? &&
-      params[:end_date].present? &&
-      params[:number_of_guests].present?
     @available_rooms = @should_show_results ? Room.all : Room.none
   end
 
@@ -28,6 +27,12 @@ class ReservationsController < ApplicationController
   end
 
   private
+
+  def set_should_show_results
+    @should_show_results = params[:start_date].present? &&
+      params[:end_date].present? &&
+      params[:number_of_guests].present?
+  end
 
   def reservation_params
     params.require(:reservation).permit(:start_date, :end_date, :number_of_guests, :guest_name, :room_id)
