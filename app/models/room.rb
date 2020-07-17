@@ -1,5 +1,5 @@
 class Room < ApplicationRecord
-  has_many :reservations
+  has_many :reservations, dependent: :restrict_with_exception
 
   validates :code, presence: true
   validates :capacity, presence: true,
