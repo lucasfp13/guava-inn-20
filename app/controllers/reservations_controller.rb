@@ -1,8 +1,9 @@
 class ReservationsController < ApplicationController
+  before_action :set_params, only: %i[search]
   before_action :set_should_show_results, only: %i[search]
 
   def search
-    @available_rooms = @should_show_results ? Room.all : Room.none
+    @available_rooms = @should_show_results ? available_rooms : Room.none
   end
 
   def new
@@ -13,7 +14,7 @@ class ReservationsController < ApplicationController
     @reservation = Reservation.new(reservation_params)
     if @reservation.save
       redirect_to @reservation.room,
-        notice: "Reservation #{@reservation.code} was successfully created."
+                  notice: "Reservation #{@reservation.code} was successfully created."
     else
       render :new
     end
@@ -23,15 +24,23 @@ class ReservationsController < ApplicationController
     @reservation = Reservation.find(params[:id])
     @reservation.destroy
     redirect_to room_path(@reservation.room),
-      notice: "Reservation #{@reservation.code} was successfully destroyed."
+                notice: "Reservation #{@reservation.code} was successfully destroyed."
   end
 
   private
 
+  def set_params
+    @number_of_guests = params[:number_of_guests]
+    @start_date = params[:start_date]
+    @end_date = params[:end_date]
+  end
+
   def set_should_show_results
-    @should_show_results = params[:start_date].present? &&
-      params[:end_date].present? &&
-      params[:number_of_guests].present?
+    @should_show_results = @start_date.present? && @end_date.present? && @number_of_guests.present?
+  end
+
+  def available_rooms
+    Room.with_capacity(@number_of_guests) - Room.not_available_at(@start_date, @end_date)
   end
 
   def reservation_params
