@@ -4,8 +4,7 @@ class Reservation < ApplicationRecord
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :guest_name, presence: true
-  validates :number_of_guests, presence: true
-  validates :number_of_guests, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
+  validates :number_of_guests, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
   validate :start_date_is_before_end_date
 
   def duration
