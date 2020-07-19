@@ -5,26 +5,41 @@ class Reservation < ApplicationRecord
   validates :end_date, presence: true
   validates :guest_name, presence: true
   validates :number_of_guests, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
-  validate :start_date_is_before_end_date
+
+  validate :start_date_is_before_end_date, if: -> { start_date.present? && end_date.present? }
+  validate :number_of_guests_is_not_greater_than_room_capacity, if: -> { number_of_guests.present? }
+  validate :chosen_date_is_available_for_reservation, if: -> { start_date.present? && end_date.present? }
 
   def duration
-    if start_date.present? && end_date.present? && end_date > start_date
-      (end_date - start_date).to_i
-    end
+    return if start_date.blank? || end_date.blank? || start_date > end_date
+
+    (end_date - start_date).to_i
   end
 
   def code
-    if id.present? && room&.code.present?
-      formatted_id = '%02d' % id
-      "#{room.code}-#{formatted_id}"
-    end
+    return if id.blank? || room&.code.blank?
+
+    formatted_id = '%02d' % id
+    "#{room.code}-#{formatted_id}"
   end
 
   private
 
   def start_date_is_before_end_date
-    if start_date.present? && end_date.present? && start_date >= end_date
-      errors.add(:base, :invalid_dates, message: 'The start date should be before the end date')
-    end
+    return if start_date < end_date
+
+    errors.add(:base, :invalid_dates, message: 'The start date should be before the end date')
+  end
+
+  def number_of_guests_is_not_greater_than_room_capacity
+    return if room.blank? || room.capacity >= number_of_guests
+
+    errors.add(:base, :insufficient_capacity, message: "The number of guests shouldn't be greater than room capacity")
+  end
+
+  def chosen_date_is_available_for_reservation
+    return if room.blank? || Room.not_available_at(start_date, end_date).empty?
+
+    errors.add(:base, :insufficient_capacity, message: "The room isn't available in the chosen date")
   end
 end
