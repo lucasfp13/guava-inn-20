@@ -6,9 +6,12 @@ class Reservation < ApplicationRecord
   validates :guest_name, presence: true
   validates :number_of_guests, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
 
-  validate :start_date_is_before_end_date, if: -> { start_date.present? && end_date.present? }
+  validate :start_date_is_before_end_date, if: -> { start_date.present? &&
+                                                    end_date.present? }
   validate :number_of_guests_is_not_greater_than_room_capacity, if: -> { number_of_guests.present? }
-  validate :chosen_date_is_available_for_reservation, if: -> { start_date.present? && end_date.present? }
+  validate :chosen_date_is_available_for_reservation, if: -> { start_date.present? &&
+                                                               end_date.present? &&
+                                                               room_id.present? }
 
   def duration
     return if start_date.blank? || end_date.blank? || start_date > end_date
@@ -38,8 +41,9 @@ class Reservation < ApplicationRecord
   end
 
   def chosen_date_is_available_for_reservation
-    return if room.blank? || Room.not_available_at(start_date, end_date).empty?
+    return if room.blank?
+    return if Reservation.where('room_id = ? AND start_date < ? AND end_date > ?', room_id, end_date, start_date).empty?
 
-    errors.add(:base, :insufficient_capacity, message: "The room isn't available in the chosen date")
+    errors.add(:base, :unavailable_for_reservation, message: "The room isn't available in the chosen date")
   end
 end
