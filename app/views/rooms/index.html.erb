@@ -35,8 +35,8 @@
           <tr>
             <td><%= room.code %></td>
             <td><%= pluralize(room.capacity, 'person', 'people') %></td>
-            <td>50%</td>
-            <td>25%</td>
+            <td><%= room.weekly_occupancy_rate %>%</td>
+            <td><%= room.monthly_occupancy_rate %>%</td>
             <td><%= link_to 'Show', room %></td>
             <td><%= link_to 'Edit', edit_room_path(room) %></td>
             <td><%= link_to 'Destroy', room, method: :delete, data: { confirm: 'Are you sure?' } %></td>
