@@ -1,8 +1,9 @@
 class RoomsController < ApplicationController
-  before_action :set_room, only: [:show, :edit, :update, :destroy]
+  before_action :set_room, only: %i[show edit update destroy]
+  before_action :set_rooms, only: %i[index]
+  before_action :global_occupancy_rate_calculation, only: %i[index]
 
   def index
-    @rooms = Room.all
   end
 
   def show
@@ -41,6 +42,17 @@ class RoomsController < ApplicationController
   private
     def set_room
       @room = Room.find(params[:id])
+    end
+
+    def set_rooms
+      @rooms = Room.all
+    end
+
+    def global_occupancy_rate_calculation
+      number_of_rooms = @rooms.count.zero? ? 1 : @rooms.count
+
+      @global_weekly_occupancy_rate = (@rooms.sum(&:weekly_occupancy_rate) / number_of_rooms)
+      @global_monthly_occupancy_rate = (@rooms.sum(&:monthly_occupancy_rate) / number_of_rooms)
     end
 
     def room_params
