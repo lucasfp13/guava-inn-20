@@ -8,7 +8,7 @@ class Reservation < ApplicationRecord
 
   validate :start_date_is_before_end_date, if: -> { start_date.present? &&
                                                     end_date.present? }
-  validate :number_of_guests_is_not_greater_than_room_capacity, if: -> { number_of_guests.present? }
+  validate :number_of_guests_is_not_greater_than_capacity, if: -> { number_of_guests.present? }
   validate :chosen_date_is_available_for_reservation, if: -> { start_date.present? &&
                                                                end_date.present? &&
                                                                room_id.present? }
@@ -34,7 +34,7 @@ class Reservation < ApplicationRecord
     errors.add(:base, :invalid_dates, message: 'The start date should be before the end date')
   end
 
-  def number_of_guests_is_not_greater_than_room_capacity
+  def number_of_guests_is_not_greater_than_capacity
     return if room.blank? || room.capacity >= number_of_guests
 
     errors.add(:base, :insufficient_capacity, message: "The number of guests shouldn't be greater than room capacity")

@@ -39,7 +39,7 @@ class Room < ApplicationRecord
       reservation_period = (reservation.start_date..(reservation.end_date - 1.day)).to_a
       ###
       # Using the bitwise AND operator to get the intersection between period
-      # range and each reservation date range and incrementing them.
+      # range and each reservation date range.
       days_with_reservation += (selected_period & reservation_period).count
     end
 
