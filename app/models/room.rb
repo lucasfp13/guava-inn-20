@@ -25,7 +25,7 @@ class Room < ApplicationRecord
     # Using DateTime to work with local time zone system, but needs to convert
     # back to the Date format to match with Reservation model 'date' field type.
     tomorrow = (DateTime.now + 1.day).to_date
-    selected_period = (tomorrow..7.days.from_now).to_a
+    selected_period = (tomorrow..next_days.days.from_now).to_a
 
     days_with_reservation = 0
     reservations.each do |reservation|
