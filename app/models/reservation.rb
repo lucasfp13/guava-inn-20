@@ -1,6 +1,8 @@
 class Reservation < ApplicationRecord
   belongs_to :room
 
+  before_destroy :check_if_it_is_a_ongoing_reservation, prepend: true
+
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :guest_name, presence: true
@@ -27,6 +29,13 @@ class Reservation < ApplicationRecord
   end
 
   private
+
+  def check_if_it_is_a_ongoing_reservation
+    return if end_date < Time.now.to_date
+    return if end_date == Time.now.to_date && Time.now.hour >= 12
+
+    throw(:abort)
+  end
 
   def start_date_is_before_end_date
     return if start_date < end_date
