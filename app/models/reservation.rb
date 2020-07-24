@@ -8,6 +8,7 @@ class Reservation < ApplicationRecord
   validates :guest_name, presence: true
   validates :number_of_guests, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
 
+  validate :start_date_is_a_future_date, if: -> { start_date.present? }
   validate :start_date_is_before_end_date, if: -> { start_date.present? &&
                                                     end_date.present? }
   validate :number_of_guests_is_not_greater_than_capacity, if: -> { number_of_guests.present? }
@@ -54,5 +55,11 @@ class Reservation < ApplicationRecord
     return if Reservation.where('room_id = ? AND start_date < ? AND end_date > ?', room_id, end_date, start_date).empty?
 
     errors.add(:base, :unavailable_for_reservation, message: "The room isn't available in the chosen date")
+  end
+
+  def start_date_is_a_future_date
+    return if start_date >= Time.now.to_date
+
+    errors.add(:base, :past_date, message: 'The start date should be today or a future date')
   end
 end
