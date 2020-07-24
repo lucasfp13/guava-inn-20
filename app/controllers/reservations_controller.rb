@@ -1,5 +1,5 @@
 class ReservationsController < ApplicationController
-  before_action :set_params, only: %i[search]
+  before_action :set_search_params, only: %i[search]
   before_action :set_should_show_results, only: %i[search]
 
   def search
@@ -29,7 +29,7 @@ class ReservationsController < ApplicationController
 
   private
 
-  def set_params
+  def set_search_params
     @number_of_guests = params[:number_of_guests]
     @start_date = params[:start_date]
     @end_date = params[:end_date]
