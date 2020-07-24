@@ -16,7 +16,7 @@ class ReservationsController < ApplicationController
       redirect_to @reservation.room,
                   notice: "Reservation #{@reservation.code} was successfully created."
     else
-      render :new
+      render action: :new
     end
   end
 
