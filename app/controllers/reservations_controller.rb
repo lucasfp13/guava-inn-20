@@ -1,5 +1,6 @@
 class ReservationsController < ApplicationController
   before_action :set_search_params, only: %i[search]
+  before_action :set_reservation, only: %i[destroy]
   before_action :set_should_show_results, only: %i[search]
 
   def search
@@ -21,13 +22,20 @@ class ReservationsController < ApplicationController
   end
 
   def destroy
-    @reservation = Reservation.find(params[:id])
-    @reservation.destroy
-    redirect_to room_path(@reservation.room),
-                notice: "Reservation #{@reservation.code} was successfully destroyed."
+    if @reservation.destroy
+      redirect_to room_path(@reservation.room),
+                  notice: "Reservation #{@reservation.code} was successfully destroyed."
+    else
+      redirect_to room_path(@reservation.room),
+                  alert: "You can't remove a ongoing reservation."
+    end
   end
 
   private
+
+  def set_reservation
+    @reservation = Reservation.find(params[:id])
+  end
 
   def set_search_params
     @number_of_guests = params[:number_of_guests]
