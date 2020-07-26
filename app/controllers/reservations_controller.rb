@@ -2,6 +2,7 @@ class ReservationsController < ApplicationController
   before_action :set_search_params, only: %i[search]
   before_action :set_reservation, only: %i[destroy]
   before_action :set_should_show_results, only: %i[search]
+  before_action :check_dates, only: %i[search]
 
   def search
     @available_rooms = @should_show_results ? available_rooms : Room.none
@@ -41,6 +42,14 @@ class ReservationsController < ApplicationController
 
   def set_should_show_results
     @should_show_results = @start_date.present? && @end_date.present? && @number_of_guests.present?
+  end
+
+  def check_dates
+    return if @start_date.blank? && @end_date.blank?
+    return flash[:alert] = nil if @start_date.to_date < @end_date.to_date
+
+    @should_show_results = false
+    flash[:alert] = "Initial date should be before the end date."
   end
 
   def available_rooms

@@ -1,5 +1,7 @@
 <h2>New Reservation</h2>
 
+<p id="alert"><%= alert %></p>
+
 <%= form_tag search_reservations_path, method: :get do %>
   <div class="field">
     <%= label_tag :start_date, 'From' %>
