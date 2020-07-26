@@ -34,40 +34,56 @@ room_203 = Room.create!(
 
 Reservation.create!(
   room: room_101,
-  guest_name: 'Maria da Paz',
-  number_of_guests: 2,
+  guest_name: Faker::Name.unique.name,
+  number_of_guests: rand(1..room_101.capacity),
   start_date: '2020-07-28',
   end_date: '2020-07-29',
 )
 
 Reservation.create!(
   room: room_101,
-  guest_name: 'José Santos',
-  number_of_guests: 1,
+  guest_name: Faker::Name.unique.name,
+  number_of_guests: rand(1..room_101.capacity),
   start_date: '2020-07-29',
   end_date: '2020-08-02',
 )
 
 Reservation.create!(
   room: room_102,
-  guest_name: 'Rafaela Silva',
-  number_of_guests: 4,
+  guest_name: Faker::Name.unique.name,
+  number_of_guests: rand(1..room_102.capacity),
   start_date: '2020-07-28',
   end_date: '2020-07-31',
 )
 
 Reservation.create!(
   room: room_102,
-  guest_name: 'Tiago Carvalho',
-  number_of_guests: 4,
-  start_date: '2020-07-30',
+  guest_name: Faker::Name.unique.name,
+  number_of_guests: rand(1..room_102.capacity),
+  start_date: '2020-07-31',
   end_date: '2020-08-04',
 )
 
 Reservation.create!(
   room: room_102,
-  guest_name: 'Carolina Queiroz',
-  number_of_guests: 5,
+  guest_name: Faker::Name.unique.name,
+  number_of_guests: rand(1..room_102.capacity),
   start_date: '2020-08-04',
+  end_date: '2020-08-10',
+)
+
+Reservation.create!(
+  room: room_203,
+  guest_name: Faker::Name.unique.name,
+  number_of_guests: rand(1..room_203.capacity),
+  start_date: '2020-07-25',
+  end_date: '2020-07-30',
+)
+
+Reservation.create!(
+  room: room_203,
+  guest_name: Faker::Name.unique.name,
+  number_of_guests: rand(1..room_203.capacity),
+  start_date: '2020-08-02',
   end_date: '2020-08-10',
 )
