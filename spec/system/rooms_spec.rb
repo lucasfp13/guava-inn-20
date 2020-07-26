@@ -69,7 +69,7 @@ RSpec.describe 'Rooms', type: :system do
 
     context 'when there are no rooms' do
       before do
-        Room.destroy_all
+        Room.delete_all
       end
 
       it 'shows an empty listing' do
@@ -130,6 +130,10 @@ RSpec.describe 'Rooms', type: :system do
         end_date: '2020-08-12',
         guest_name: 'Carolina dos Anjos',
         number_of_guests: 3,
+      )
+      @room_without_reservations = Room.create!(
+        code: '247',
+        capacity: '2',
       )
     end
 
@@ -197,12 +201,8 @@ RSpec.describe 'Rooms', type: :system do
     end
 
     context 'when the room has no reservations' do
-      before do
-        @room.reservations.destroy_all
-      end
-
       it 'shows an empty listing' do
-        visit room_path(@room.id)
+        visit room_path(@room_without_reservations.id)
 
         within('table') do
           expect(page).to have_content('There are no reservations for this room')
