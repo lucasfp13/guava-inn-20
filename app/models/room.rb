@@ -22,8 +22,7 @@ class Room < ApplicationRecord
     return 0 if reservations.blank?
 
     ###
-    # Using DateTime to work with local time zone system, but needs to convert
-    # back to the Date format to match with Reservation model 'date' field type.
+    # Using DateTime instead Date to work with local time zone system
     tomorrow = (DateTime.now + 1.day).to_date
     selected_period = (tomorrow..next_days.days.from_now).to_a
 
