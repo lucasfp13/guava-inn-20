@@ -1,6 +1,8 @@
 class Reservation < ApplicationRecord
   belongs_to :room
 
+  before_destroy :check_if_is_a_ongoing_reservation, prepend: true
+
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :guest_name, presence: true
@@ -8,7 +10,7 @@ class Reservation < ApplicationRecord
     greater_than: 0,
     less_than_or_equal_to: 10
   }
-
+  validate :start_date_is_a_future_date, if: -> { start_date.present? }
   validate :start_date_is_before_end_date, if: -> {
     start_date.present? &&
     end_date.present?
@@ -21,7 +23,6 @@ class Reservation < ApplicationRecord
     end_date.present? &&
     room_id.present?
   }
-  validate :check_if_it_is_a_ongoing_reservation, on: :destroy
 
   def duration
     return if start_date.blank? || end_date.blank? || start_date > end_date
@@ -38,15 +39,11 @@ class Reservation < ApplicationRecord
 
   private
 
-  def check_if_it_is_a_ongoing_reservation
+  def check_if_is_a_ongoing_reservation
     return if end_date < Time.now.to_date
     return if end_date == Time.now.to_date && Time.now.hour >= 12
 
-    errors.add(
-      :base,
-      :has_ongoing_reservations,
-      message: "You can't remove a ongoing reservation."
-    )
+    throw(:abort)
   end
 
   def start_date_is_before_end_date
