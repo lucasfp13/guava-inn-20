@@ -22,13 +22,9 @@ class ReservationsController < ApplicationController
   end
 
   def destroy
-    if @reservation.destroy
-      redirect_to room_path(@reservation.room),
-                  notice: "Reservation #{@reservation.code} was successfully destroyed."
-    else
-      redirect_to room_path(@reservation.room),
-                  alert: "You can't remove a ongoing reservation."
-    end
+    @reservation.destroy
+    redirect_to room_path(@reservation.room),
+                notice: "Reservation #{@reservation.code} was successfully destroyed."
   end
 
   private
