@@ -10,7 +10,6 @@ class Reservation < ApplicationRecord
     greater_than: 0,
     less_than_or_equal_to: 10
   }
-  validate :start_date_is_a_future_date, if: -> { start_date.present? }
   validate :start_date_is_before_end_date, if: -> {
     start_date.present? &&
     end_date.present?
@@ -40,7 +39,8 @@ class Reservation < ApplicationRecord
   private
 
   def check_if_is_a_ongoing_reservation
-    return if end_date < Time.now.to_date
+    today = Time.now.to_date
+    return if start_date > today || end_date < today
     return if end_date == Time.now.to_date && Time.now.hour >= 12
 
     throw(:abort)
@@ -62,7 +62,7 @@ class Reservation < ApplicationRecord
     errors.add(
       :number_of_guests,
       :greater_than_room_capacity,
-      message: "The number of guests shouldn't be greater than room capacity"
+      message: "shouldn't be greater than room capacity"
     )
   end
 
@@ -80,11 +80,5 @@ class Reservation < ApplicationRecord
       :invalid_dates,
       message: "The room isn't available in the chosen date"
     )
-  end
-
-  def start_date_is_a_future_date
-    return if start_date >= Time.now.to_date
-
-    errors.add(:base, :past_date, message: 'The start date should be today or a future date')
   end
 end
