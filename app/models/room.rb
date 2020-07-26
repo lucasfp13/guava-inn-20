@@ -3,6 +3,7 @@ class Room < ApplicationRecord
 
   validates :code, presence: true, uniqueness: true
   validates :capacity, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
+  validate :changes_on_capacity, on: :update
 
   after_find :calculate_occupancy_rates
 
@@ -49,5 +50,18 @@ class Room < ApplicationRecord
   def calculate_occupancy_rates
     @weekly_occupancy_rate = occupancy_rate_calculation(7)
     @monthly_occupancy_rate = occupancy_rate_calculation(30)
+  end
+
+  def changes_on_capacity
+    return if reservations.blank?
+
+    if reservations.where('number_of_guests > ?', capacity).any?
+      errors.add(
+        :capacity,
+        :invalid_capacity,
+        message: "couldn't be updated because the room has ongoing
+          reservations with more than #{capacity} guests."
+      )
+    end
   end
 end
