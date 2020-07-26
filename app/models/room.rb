@@ -1,5 +1,7 @@
 class Room < ApplicationRecord
-  has_many :reservations, dependent: :restrict_with_exception
+  before_destroy :check_existence_of_reservations
+
+  has_many :reservations
 
   validates :code, presence: true, uniqueness: true, length: { minimum: 3, maximum: 9 }
   validates :capacity, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
@@ -62,5 +64,11 @@ class Room < ApplicationRecord
           reservations with more than #{capacity} guests."
       )
     end
+  end
+
+  def check_existence_of_reservations
+    return if reservations.empty?
+
+    throw(:abort)
   end
 end

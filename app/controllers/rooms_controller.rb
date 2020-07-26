@@ -35,8 +35,11 @@ class RoomsController < ApplicationController
   end
 
   def destroy
-    @room.destroy
-    redirect_to rooms_url, notice: 'Room was successfully destroyed.'
+    if @room.destroy
+      redirect_to rooms_url, notice: 'Room was successfully destroyed.'
+    else
+      redirect_to rooms_url, alert: "You can't remove a room that already has reservations."
+    end
   end
 
   private
