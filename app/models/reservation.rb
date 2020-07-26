@@ -1,8 +1,6 @@
 class Reservation < ApplicationRecord
   belongs_to :room
 
-  validate :check_if_it_is_a_ongoing_reservation, on: :destroy
-
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :guest_name, presence: true
@@ -23,6 +21,7 @@ class Reservation < ApplicationRecord
     end_date.present? &&
     room_id.present?
   }
+  validate :check_if_it_is_a_ongoing_reservation, on: :destroy
 
   def duration
     return if start_date.blank? || end_date.blank? || start_date > end_date

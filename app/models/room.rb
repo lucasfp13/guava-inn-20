@@ -1,7 +1,7 @@
 class Room < ApplicationRecord
   has_many :reservations, dependent: :restrict_with_exception
 
-  validates :code, presence: true, uniqueness: true
+  validates :code, presence: true, uniqueness: true, length: { minimum: 3, maximum: 9 }
   validates :capacity, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
   validate :changes_on_capacity, on: :update
 
