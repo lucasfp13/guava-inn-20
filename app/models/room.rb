@@ -1,11 +1,10 @@
 class Room < ApplicationRecord
-  before_destroy :check_existence_of_reservations
-
   has_many :reservations
 
   validates :code, presence: true, uniqueness: true, length: { minimum: 3, maximum: 9 }
   validates :capacity, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
-  validate :changes_on_capacity, on: :update
+  validate :changes_on_capacity, if: -> { reservations.any? }, on: :update
+  validate :existence_of_reservations, if: -> { reservations.any? }
 
   after_find :calculate_occupancy_rates
 
@@ -18,8 +17,6 @@ class Room < ApplicationRecord
   scope :not_available_at, ->(start_date, end_date) {
     joins(:reservations).where('start_date < ? AND end_date > ?', end_date, start_date)
   }
-
-  private
 
   def occupancy_rate_calculation(next_days)
     return 0 if reservations.blank?
@@ -48,14 +45,14 @@ class Room < ApplicationRecord
     ((days_with_reservation.to_f / next_days) * 100).round
   end
 
+  private
+
   def calculate_occupancy_rates
     @weekly_occupancy_rate = occupancy_rate_calculation(7)
     @monthly_occupancy_rate = occupancy_rate_calculation(30)
   end
 
   def changes_on_capacity
-    return if reservations.blank?
-
     if reservations.where('number_of_guests > ?', capacity).any?
       errors.add(
         :capacity,
@@ -66,9 +63,7 @@ class Room < ApplicationRecord
     end
   end
 
-  def check_existence_of_reservations
-    return if reservations.empty?
-
+  def existence_of_reservations
     throw(:abort)
   end
 end
