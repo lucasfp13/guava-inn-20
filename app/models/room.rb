@@ -1,10 +1,11 @@
 class Room < ApplicationRecord
   has_many :reservations
 
+  before_destroy :check_existence_of_reservations, if: -> { reservations.any? }
+
   validates :code, presence: true, uniqueness: true, length: { minimum: 3, maximum: 9 }
   validates :capacity, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 10 }
   validate :changes_on_capacity, if: -> { reservations.any? }, on: :update
-  validate :existence_of_reservations, if: -> { reservations.any? }
 
   after_find :calculate_occupancy_rates
 
@@ -20,17 +21,17 @@ class Room < ApplicationRecord
 
   def occupancy_rate_calculation(next_days)
     return 0 if reservations.blank?
-
     ###
     # Using DateTime instead Date to work with local time zone system
-    tomorrow = (DateTime.now + 1.day).to_date
-    selected_period = (tomorrow..next_days.days.from_now).to_a
+    period_start_date = (DateTime.now + 1.day).to_date
+    period_end_date = (next_days.days.from_now).to_date
+    selected_period = (period_start_date..period_end_date).to_a
 
     days_with_reservation = 0
     reservations.each do |reservation|
       ###
       # Skipping rooms from past periods than selected period
-      next if reservation.end_date < tomorrow
+      next if reservation.end_date < period_start_date
       ###
       # Note that on each reservation case the end_date shouldn't be considered
       # as a 'occupied day' since the end_date ends at 12:00 PM and the room is
@@ -63,7 +64,7 @@ class Room < ApplicationRecord
     end
   end
 
-  def existence_of_reservations
+  def check_existence_of_reservations
     throw(:abort)
   end
 end
