@@ -67,6 +67,10 @@ RSpec.describe Room, type: :model do
   end
 
   describe 'weekly, monthly and occupancy rates' do
+    before do
+      @tomorrow = (Time.now + 1.day).to_date
+    end
+
     context 'when none reservations exists' do
       it 'occupancy rate is zero' do
         room = create_room
@@ -76,40 +80,36 @@ RSpec.describe Room, type: :model do
       end
     end
 
-    context 'when in the next 7 days there are reservations' do
+    context 'when in the next 9 days there are reservations' do
       it 'validates that weekly occupancy rate is 100%' do
-        tomorrow = (Time.now + 1.day).to_date
         room = create_room(
-          with_reservations: [{ start_date: tomorrow, end_date: 8.days.from_now }]
+          with_reservations: [{ start_date: @tomorrow, end_date: @tomorrow + 9.days }]
         )
 
         expect(room.occupancy_rate_calculation(7)).to equal(100)
       end
 
-      it 'validates that monthly occupancy rate is 23%' do
-        tomorrow = Time.now.to_date
+      it 'validates that monthly occupancy rate is 30%' do
         room = create_room(
-          with_reservations: [{ start_date: tomorrow, end_date: 8.days.from_now }]
+          with_reservations: [{ start_date: @tomorrow, end_date: @tomorrow + 9.days }]
         )
 
-        expect(room.occupancy_rate_calculation(30)).to equal(23)
+        expect(room.occupancy_rate_calculation(30)).to equal(30)
       end
     end
 
     context 'when in the next 4 days there are reservations' do
       it 'validates that weekly occupancy rate is 57%' do
-        tomorrow = Time.now.to_date
         room = create_room(
-          with_reservations: [{ start_date: tomorrow, end_date: 5.days.from_now }]
+          with_reservations: [{ start_date: @tomorrow, end_date: @tomorrow + 4.days }]
         )
 
         expect(room.occupancy_rate_calculation(7)).to equal(57)
       end
 
       it 'validates that monthly occupancy rate is 13%' do
-        tomorrow = Time.now.to_date
         room = create_room(
-          with_reservations: [{ start_date: tomorrow, end_date: 5.days.from_now }]
+          with_reservations: [{ start_date: @tomorrow, end_date: @tomorrow + 4.days }]
         )
 
         expect(room.occupancy_rate_calculation(30)).to equal(13)
@@ -118,18 +118,16 @@ RSpec.describe Room, type: :model do
 
     context 'when in the next 27 days there are reservations' do
       it 'validates that weekly occupancy rate is 100%' do
-        tomorrow = Time.now.to_date
         room = create_room(
-          with_reservations: [{ start_date: tomorrow, end_date: 28.days.from_now }]
+          with_reservations: [{ start_date: @tomorrow, end_date: @tomorrow + 27.days }]
         )
 
         expect(room.occupancy_rate_calculation(7)).to equal(100)
       end
 
       it 'validates that monthly occupancy rate is 90%' do
-        tomorrow = Time.now.to_date
         room = create_room(
-          with_reservations: [{ start_date: tomorrow, end_date: 28.days.from_now }]
+          with_reservations: [{ start_date: @tomorrow, end_date: @tomorrow + 27.days }]
         )
 
         expect(room.occupancy_rate_calculation(30)).to equal(90)

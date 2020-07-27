@@ -7,8 +7,12 @@ RSpec.describe 'Rooms', type: :system do
 
   describe 'listing' do
     before do
-      Room.create!(code: '101', capacity: 1)
-      Room.create!(code: '102', capacity: 5)
+      @room_101 = create_room(code: '101', capacity: 1)
+      @room_102 = create_room(
+        code: '102',
+        capacity: 5,
+        with_reservations: [{ start_date: '2020-07-02', end_date: '2020-07-10'}]
+      )
     end
 
     it 'shows all rooms in the system with their respective details' do
@@ -27,20 +31,20 @@ RSpec.describe 'Rooms', type: :system do
         within('tbody tr:first-child') do
           expect(page).to have_content('101')
           expect(page).to have_content('1 person')
-          expect(page).to have_link('Show', href: room_path(Room.first.id))
-          expect(page).to have_link('Edit', href: edit_room_path(Room.first.id))
+          expect(page).to have_link('Show', href: room_path(@room_101.id))
+          expect(page).to have_link('Edit', href: edit_room_path(@room_101.id))
         end
 
         within('tbody tr:last-child') do
           expect(page).to have_content('102')
           expect(page).to have_content('5 people')
-          expect(page).to have_link('Show', href: room_path(Room.last.id))
-          expect(page).to have_link('Edit', href: edit_room_path(Room.last.id))
+          expect(page).to have_link('Show', href: room_path(@room_102.id))
+          expect(page).to have_link('Edit', href: edit_room_path(@room_102.id))
         end
       end
     end
 
-    it 'allows users to delete a room' do
+    it 'allows users to delete a room without reservations' do
       visit rooms_path
 
       expect(page).to have_selector('table tbody tr', count: 2)
@@ -53,6 +57,21 @@ RSpec.describe 'Rooms', type: :system do
 
       expect(page).to have_selector('table tbody tr', count: 1)
       expect(page).to have_content('Room was successfully destroyed')
+    end
+
+    it 'block users to delete a room with reservations' do
+      visit rooms_path
+
+      expect(page).to have_selector('table tbody tr', count: 2)
+
+      within('table tbody tr:last-child') do
+        accept_alert do
+          click_link 'Destroy'
+        end
+      end
+
+      expect(page).to have_selector('table tbody tr', count: 2)
+      expect(page).to have_content("You can't remove a room that already has reservations.")
     end
 
     it 'has a link to create a new room' do
@@ -69,7 +88,8 @@ RSpec.describe 'Rooms', type: :system do
 
     context 'when there are no rooms' do
       before do
-        Room.delete_all
+        Reservation.destroy_all
+        Room.destroy_all
       end
 
       it 'shows an empty listing' do
@@ -112,26 +132,20 @@ RSpec.describe 'Rooms', type: :system do
 
   describe 'show room' do
     before do
-      @room = Room.create!(
+      @room = create_room(
         code: '147',
         capacity: '4',
         notes: 'Sparkling clean',
+        with_reservations: [
+          { id: 1, start_date: '2020-08-02', end_date: '2020-08-10',
+            guest_name: 'João Santana', number_of_guests: 1 },
+          { id: 2, start_date: '2020-08-11', end_date: '2020-08-12',
+            guest_name: 'Carolina dos Anjos', number_of_guests: 3 },
+          { id: 3, start_date: Time.now.to_date, end_date: 4.days.from_now.to_date,
+            guest_name: 'Cleber Marcolino', number_of_guests: 2 }  
+        ]
       )
-      @room.reservations.create(
-        id: 1,
-        start_date: '2020-08-02',
-        end_date: '2020-08-10',
-        guest_name: 'João Santana',
-        number_of_guests: 1,
-      )
-      @room.reservations.create(
-        id: 2,
-        start_date: '2020-08-11',
-        end_date: '2020-08-12',
-        guest_name: 'Carolina dos Anjos',
-        number_of_guests: 3,
-      )
-      @room_without_reservations = Room.create!(
+      @room_without_reservations = create_room(
         code: '247',
         capacity: '2',
       )
@@ -164,19 +178,19 @@ RSpec.describe 'Rooms', type: :system do
         end
 
         within('tbody tr:last-child') do
-          expect(page).to have_content('147-02')
-          expect(page).to have_content('2020-08-11 to 2020-08-12')
-          expect(page).to have_content('1 night')
-          expect(page).to have_content('Carolina dos Anjos')
-          expect(page).to have_content('3 guests')
+          expect(page).to have_content('147-03')
+          expect(page).to have_content("#{Time.now.to_date} to #{4.days.from_now.to_date}")
+          expect(page).to have_content('4 nights')
+          expect(page).to have_content('Cleber Marcolino')
+          expect(page).to have_content('2 guests')
         end
       end
     end
 
-    it 'allows users to delete a reservation' do
+    it 'allows users to delete a future or past reservation' do
       visit room_path(@room.id)
 
-      expect(page).to have_selector('table tbody tr', count: 2)
+      expect(page).to have_selector('table tbody tr', count: 3)
 
       within('table tbody tr:first-child') do
         accept_alert do
@@ -184,8 +198,23 @@ RSpec.describe 'Rooms', type: :system do
         end
       end
 
-      expect(page).to have_selector('table tbody tr', count: 1)
+      expect(page).to have_selector('table tbody tr', count: 2)
       expect(page).to have_content('Reservation 147-01 was successfully destroyed.')
+    end
+
+    it 'block users to delete a ongoing reservation' do
+      visit room_path(@room.id)
+
+      expect(page).to have_selector('table tbody tr', count: 3)
+
+      within('table tbody tr:last-child') do
+        accept_alert do
+          click_link 'Destroy'
+        end
+      end
+
+      expect(page).to have_selector('table tbody tr', count: 3)
+      expect(page).to have_content("You can't remove a ongoing reservation.")
     end
 
     it 'has a link to edit the room details' do
@@ -213,7 +242,14 @@ RSpec.describe 'Rooms', type: :system do
 
   describe 'edit room' do
     before do
-      @room = Room.create!(code: '147', capacity: '4')
+      @room = create_room(
+        code: '147',
+        capacity: '4',
+        with_reservations: [
+          { start_date: '2020-08-02', end_date: '2020-08-10', number_of_guests: 4 },
+        ]
+      )
+
     end
 
     it 'allows users to change attributes of a room' do
@@ -233,6 +269,15 @@ RSpec.describe 'Rooms', type: :system do
       click_on 'Update Room'
 
       expect(page).to have_content("can't be blank")
+    end
+
+    it 'shows an error message when user change invalid capacity' do
+      visit edit_room_path(@room.id)
+
+      select '3', from: 'Capacity'
+      click_on 'Update Room'
+
+      expect(page).to have_content("the room has ongoing reservations with more than 3 guests.")
     end
 
     it 'has a link to show the room details' do
