@@ -137,9 +137,9 @@ RSpec.describe 'Rooms', type: :system do
         capacity: '4',
         notes: 'Sparkling clean',
         with_reservations: [
-          { id: 1, start_date: '2020-08-02', end_date: '2020-08-10',
+          { id: 1, start_date: '2020-07-02', end_date: '2020-07-10',
             guest_name: 'João Santana', number_of_guests: 1 },
-          { id: 2, start_date: '2020-08-11', end_date: '2020-08-12',
+          { id: 2, start_date: '2020-07-11', end_date: '2020-07-12',
             guest_name: 'Carolina dos Anjos', number_of_guests: 3 },
           { id: 3, start_date: Time.now.to_date, end_date: 4.days.from_now.to_date,
             guest_name: 'Cleber Marcolino', number_of_guests: 2 }  
@@ -171,7 +171,7 @@ RSpec.describe 'Rooms', type: :system do
 
         within('tbody tr:first-child') do
           expect(page).to have_content('147-01')
-          expect(page).to have_content('2020-08-02 to 2020-08-10')
+          expect(page).to have_content('2020-07-02 to 2020-07-10')
           expect(page).to have_content('8 nights')
           expect(page).to have_content('João Santana')
           expect(page).to have_content('1 guest')
@@ -246,7 +246,7 @@ RSpec.describe 'Rooms', type: :system do
         code: '147',
         capacity: '4',
         with_reservations: [
-          { start_date: '2020-08-02', end_date: '2020-08-10', number_of_guests: 4 },
+          { start_date: '2020-07-02', end_date: '2020-07-10', number_of_guests: 4 },
         ]
       )
 
