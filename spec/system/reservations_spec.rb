@@ -21,8 +21,8 @@ RSpec.describe 'Reservations', type: :system do
 
         expect(page).to have_content('New Reservation')
 
-        fill_in 'From', with: '07/20/2020'
-        fill_in 'To', with: '08/20/2020'
+        fill_in 'From', with: Date.new(2020, 7, 20)
+        fill_in 'To', with: Date.new(2020, 8, 20)
         select '5', from: '# of guests'
         click_on 'Search for Available Rooms'
 
@@ -50,8 +50,8 @@ RSpec.describe 'Reservations', type: :system do
 
         expect(page).to have_content('New Reservation')
 
-        fill_in 'From', with: '07/20/2020'
-        fill_in 'To', with: '07/18/2020'
+        fill_in 'From', with: Date.new(2020, 7, 20)
+        fill_in 'To', with: Date.new(2020, 7, 18)
         select '5', from: '# of guests'
         click_on 'Search for Available Rooms'
 
@@ -68,8 +68,8 @@ RSpec.describe 'Reservations', type: :system do
 
       expect(page).to have_content('New Reservation')
 
-      fill_in 'From', with: '07/20/2020'
-      fill_in 'To', with: '08/20/2020'
+      fill_in 'From', with: Date.new(2020, 7, 20)
+      fill_in 'To', with: Date.new(2020, 8, 20)
       select '3', from: '# of guests'
       click_on 'Search for Available Rooms'
 
@@ -110,8 +110,8 @@ RSpec.describe 'Reservations', type: :system do
     it 'allows users to create a new reservation' do
       visit search_reservations_path
 
-      fill_in 'From', with: '07/20/2020'
-      fill_in 'To', with: '07/30/2020'
+      fill_in 'From', with: Date.new(2020, 7, 20)
+      fill_in 'To', with: Date.new(2020, 7, 30)
       select '3', from: '# of guests'
       click_on 'Search for Available Rooms'
 
@@ -146,8 +146,8 @@ RSpec.describe 'Reservations', type: :system do
       it 'shows an alert with specific validation errors' do
         visit search_reservations_path
 
-        fill_in 'From', with: '07/20/2020'
-        fill_in 'To', with: '07/30/2020'
+        fill_in 'From', with: Date.new(2020, 7, 20)
+        fill_in 'To', with: Date.new(2020, 7, 30)
         select '3', from: '# of guests'
         click_on 'Search for Available Rooms'
 
@@ -165,8 +165,8 @@ RSpec.describe 'Reservations', type: :system do
           end
         end
         
-        fill_in 'Start date', with: '07/31/2020'
-        fill_in 'End date', with: '07/30/2020'
+        fill_in 'Start date', with: Date.new(2020, 7, 31)
+        fill_in 'End date', with: Date.new(2020, 7, 30)
         select '7', from: 'Number of guests'
         click_on 'Create Reservation'
 
