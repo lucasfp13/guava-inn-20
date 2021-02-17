@@ -34,6 +34,7 @@ group :development, :test do
   gem 'selenium-webdriver', '~> 3.142'
   gem 'factory_bot_rails'
   gem 'faker'
+  gem 'webdrivers'
 end
 
 group :development do
