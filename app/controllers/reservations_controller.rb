@@ -50,10 +50,11 @@ class ReservationsController < ApplicationController
 
   def check_dates
     return if @start_date.blank? && @end_date.blank?
-    return flash[:alert] = nil if @start_date.to_date < @end_date.to_date
+    return if @start_date.to_date < @end_date.to_date
 
     @should_show_results = false
-    flash[:alert] = "Initial date should be before the end date."
+    redirect_to new_search_reservations_path,
+      alert: "Initial date should be before the end date."
   end
 
   def available_rooms
