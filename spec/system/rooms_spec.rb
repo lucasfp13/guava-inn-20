@@ -83,7 +83,7 @@ RSpec.describe 'Rooms', type: :system do
     it 'has a link to create a new reservation' do
       visit rooms_path
 
-      expect(page).to have_link('New Reservation', href: search_reservations_path)
+      expect(page).to have_link('New Reservation', href: new_search_reservations_path)
     end
 
     context 'when there are no rooms' do

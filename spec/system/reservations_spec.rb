@@ -17,7 +17,7 @@ RSpec.describe 'Reservations', type: :system do
 
     context 'when there are none available rooms' do
       it 'show the standard system message' do
-        visit search_reservations_path
+        visit new_search_reservations_path
 
         expect(page).to have_content('New Reservation')
 
@@ -46,7 +46,7 @@ RSpec.describe 'Reservations', type: :system do
 
     context 'when user tries to search with start date after end date' do
       it 'shows no results and show an alert' do
-        visit search_reservations_path
+        visit new_search_reservations_path
 
         expect(page).to have_content('New Reservation')
 
@@ -64,7 +64,7 @@ RSpec.describe 'Reservations', type: :system do
     end
 
     it 'allow users to search for available rooms with a given capacity in a period' do
-      visit search_reservations_path
+      visit new_search_reservations_path
 
       expect(page).to have_content('New Reservation')
 
@@ -92,7 +92,7 @@ RSpec.describe 'Reservations', type: :system do
     end
 
     it 'allow users to go back to the rooms list' do
-      visit search_reservations_path
+      visit new_search_reservations_path
 
       expect(page).to have_link('Back', href: root_path)
     end
@@ -108,7 +108,7 @@ RSpec.describe 'Reservations', type: :system do
     end
 
     it 'allows users to create a new reservation' do
-      visit search_reservations_path
+      visit new_search_reservations_path
 
       fill_in 'From', with: Date.new(2020, 7, 20)
       fill_in 'To', with: Date.new(2020, 7, 30)
@@ -144,7 +144,7 @@ RSpec.describe 'Reservations', type: :system do
 
     context 'when user tries to create a reservation with invalid values' do
       it 'shows an alert with specific validation errors' do
-        visit search_reservations_path
+        visit new_search_reservations_path
 
         fill_in 'From', with: Date.new(2020, 7, 20)
         fill_in 'To', with: Date.new(2020, 7, 30)
