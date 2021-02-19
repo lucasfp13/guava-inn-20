@@ -1,10 +1,10 @@
 class ReservationsController < ApplicationController
-  before_action :set_search_params, only: %i[search]
+  before_action :set_search_params, only: %i[show_search]
   before_action :set_reservation, only: %i[destroy]
-  before_action :set_should_show_results, only: %i[search]
-  before_action :check_dates, only: %i[search]
+  before_action :set_should_show_results, only: %i[show_search]
+  before_action :check_dates, only: %i[show_search]
 
-  def search
+  def show_search
     @available_rooms = @should_show_results ? available_rooms : Room.none
   end
 
