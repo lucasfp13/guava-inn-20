@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   resources :rooms
   resources :reservations, only: [:new, :create, :destroy] do
-    get :search, on: :collection
+    get :new_search, on: :collection
+    get :show_search, on: :collection
   end
 
   root to: redirect('/rooms')
