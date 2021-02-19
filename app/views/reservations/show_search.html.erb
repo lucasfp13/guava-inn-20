@@ -1,0 +1,44 @@
+<h2>New Reservation</h2>
+
+<p id="alert"><%= alert %></p>
+
+<%= render 'search_form' %>
+
+<section class="listing">
+  <h3>Available Rooms</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Capacity</th>
+        <th colspan="3">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% if @available_rooms.any? %>
+        <% @available_rooms.each do |room| %>
+          <tr>
+            <td><%= room.code %></td>
+            <td><%= pluralize(room.capacity, 'person', 'people') %></td>
+            <td>
+              <%= link_to 'Create Reservation', new_reservation_path( reservation: {
+                room_id: room.id,
+                start_date: params[:start_date],
+                end_date: params[:end_date],
+                number_of_guests: params[:number_of_guests],
+              }) %>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
+        <td colspan="7">There are no available rooms for the selected filters.</td>
+      <% end %>
+    </tbody>
+  </table>
+</section>
+
+<br/>
+
+<%= link_to 'Back', root_path %>
